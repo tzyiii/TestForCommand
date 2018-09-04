@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Test</title>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+ <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+    class TodoItem extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {done : false};
+            this.onClick = this.onClick.bind();
+        }
+        onClick() {
+            console.log("click");
+            this.setState(function (prevState) {
+                return {done : !prevState.done}
+            });
+        }
+        render(){
+            const value = this.state.done? 'line-through':'none';
+            const textStyle = {'textDecoration': value};
+            const buttonName = this.state.done ? 'undo' : 'done';
+            return (
+                <div>
+                    <button onClick= {this.onClick.bind(this)}>{buttonName}</button>
+                    <span style = {textStyle}> {this.props.text}</span>
+                </div>
+            );
+        }
+    }
+
+    class UserInput extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                userInput : '',
+            }
+            this.onInputChange = this.onInputChange.bind(this);
+            this.onClickAdd = this.onClickAdd.bind(this);
+        }
+
+
+        onClickAdd () {
+            console.log("Click");
+            this.props.handleAddTodo(this.state.userInput);
+        }
+
+        onInputChange(e) {
+            this.setState({
+                userInput : e.target.value
+            })
+        }
+
+        render() {
+            return (
+               <div>
+                   <input type="text" value = {this.state.userInput} onChange = {this.onInputChange}></input>
+                   <button onClick = {this.onClickAdd}>Add</button>
+               </div>
+            );
+        }
+    }
+
+    class App extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                todos : ['one', 'two', 'three','four','five'],
+            }
+            this.handleAddTodo = this.handleAddTodo.bind(this);
+        }
+
+        handleAddTodo(text) {
+         this.setState(function (prevState) {
+             return {
+                 todos : [...prevState.todos, text],
+             }
+         });
+        }
+
+        render() {
+            return (
+               <div>
+                   <TodoList todos = {this.state.todos}/>
+                   <UserInput handleAddTodo ={this.handleAddTodo}/>
+               </div>
+            );
+        }
+    }
+
+    class TodoList extends React.Component {
+        render() {
+            return (
+                <div>
+                    {this.props.todos.map(function(str, index) {
+                        return (
+                         <TodoItem text = {str} key = {index}/>
+                        );
+                    })}
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(<App/>, document.getElementById('root'));
+</script>
+</body>
+</html>
